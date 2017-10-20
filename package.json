@@ -1,7 +1,7 @@
 {
   "name": "thesis-users",
   "version": "1.0.0",
-  "description": "The project description",
+  "description": "User Service component for the Datastalkers Tinder App",
   "main": ".eslintrc.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,5 +15,16 @@
   "bugs": {
     "url": "https://github.com/hackreactor/hrsf81-thesis/issues"
   },
-  "homepage": "https://github.com/hackreactor/hrsf81-thesis#readme"
+  "homepage": "https://github.com/hackreactor/hrsf81-thesis#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "faker": "^4.1.0",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.15.0"
+  }
 }
