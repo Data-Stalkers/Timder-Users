@@ -42,11 +42,11 @@ Query will happen with one of two unique keys
 
 - `type` Can be either __user__ or __stat__. Defaults to __user__.
 - `query` Used with type __user__. User ID num or zone string. Can accept an array
-- `gender` Used with type __user__. _OPTIONAL_. The gender of users to retrieve
-- `filter` Used with type __user__. _OPTIONAL_. An array of userIDs to omit from results, e.g. swiped users
+- `gender` Used with type __user__. _[OPTIONAL]_. The gender of users to retrieve
+- `filter` Used with type __user__. _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
 
-- `startDate` Used with _stat_. Start of period to query for stats. Takes formats supported by PostgreSQL. Defaults at first entry
-- `endDate` Used with _stat_. End of period to query for stats. Takes formats supported by PostgreSQL. Defaults at last entry
+- `startDate` Used with __stat__. Start of period to query for stats. Takes formats supported by PostgreSQL. Defaults at first entry
+- `endDate` Used with __stat__. End of period to query for stats. Takes formats supported by PostgreSQL. Defaults at last entry
 
 ##### Example User Request Parameters
 
@@ -70,7 +70,7 @@ Get all females from _"Zone A"_ except userIDs _56_ and _69_
 
 ##### Example Stat Request Parameters
 
-Get stats from Oct 31 1984 to Dec 25 1984
+Get stats from _Oct 31 1984_ to _Dec 25 1984_
 ```javascript
 {
   type: 'stat',
@@ -84,25 +84,27 @@ Get stats from Oct 31 1984 to Dec 25 1984
 ##### Type 'user'
 ```javascript
 [{
-  userId: NUMBER,
+  id: NUMBER,
   name: STRING,
   email: STRING,
   gender: STRING,
   location: STRING,
   photoCount: NUMBER,
+  dob: NUMBER,
   traits: ARRAY
 }]
 ```
 
 The return object has been built to include information irrelevant to the MVP, for future expansion opportunity
 
-- `userId` The user's ID number
+- `id` The user's ID number
 - `name` The user's name
 - `email` The user's email count
 - `gender` The user's gender
 - `location` Which zone the user is located in
 - `photoCount` The number of photos the user has uploaded
-- `traits` An array of objective terms that can be used to describe the user's physical appearance. Represents a photo of user
+- `dob` Represents year the user was born
+- `traits` An array of objective terms that can be used to describe the user's physical appearance. Represents a photo of user.
 
 ##### Type 'stat'
 
