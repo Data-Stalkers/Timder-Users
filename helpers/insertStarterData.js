@@ -8,7 +8,7 @@ const client = new elasticsearch.Client({
 
 const INDEX_NAME = 'userslist';
 const USER_TYPE = 'User';
-const NUM_TO_INSERT = 10;
+const NUM_TO_INSERT = 1000;
 
 let pingServer = () => {
   client.ping({}, function (error) {
@@ -44,7 +44,7 @@ let submitNewUser = (n, c = 0) => {
     if (err) {
       console.error('Insert error:', err);
     } else {
-      console.info('#' + c, 'Created user', newUser.name, 'born', newUser.dob, '- Users to go:', n - 1);
+      console.info('#' + c + ':', 'Created user', newUser.name, '- born', newUser.dob, '- Users to go:', n - 1);
       if (n > 0) {
         submitNewUser(n - 1, c + 1);
       }
@@ -55,5 +55,10 @@ let submitNewUser = (n, c = 0) => {
 // deleteAllUsers();
 
 pingServer();
+
+module.exports = {
+  pingServer
+};
+
 
 // console.dir(generator.constructNewUser());
