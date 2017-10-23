@@ -1,14 +1,14 @@
-var elasticsearch = require('elasticsearch');
+const elasticsearch = require('elasticsearch');
 const generator = require('./generator.js');
 const configs = require('../config/config.js');
 
-var client = new elasticsearch.Client({
-  host: configs.elasticUri,
-  log: 'trace'
+const client = new elasticsearch.Client({
+  host: configs.elasticUri
 });
 
 const INDEX_NAME = 'userslist';
 const USER_TYPE = 'User';
+const NUM_TO_INSERT = 10;
 
 let pingServer = () => {
   client.ping({}, function (error) {
@@ -16,8 +16,7 @@ let pingServer = () => {
       console.trace('Elasticsearch cluster is down!');
     } else {
       console.log('==== All is well ====');
-      // submitNewUser(1);
-      // deleteAllUsers();
+      submitNewUser(NUM_TO_INSERT);
     }
   });
 };
@@ -29,16 +28,14 @@ let deleteAllUsers = () => {
     if (err) {
       console.err('Deletion error:', err);
     } else {
-      console.log('Deletion success', res);
+      console.info('Deletion success', res);
     }
-    // ...
   });
 };
 
-let submitNewUser = (n) => {
-  // console.log('Set Gender:', faker.name.gender());
+let submitNewUser = (n, c = 0) => {
+  if (n === 0) return;
   let newUser = generator.constructNewUser();
-  console.log('Creating users', newUser);
   client.index({
     index: INDEX_NAME,
     type: USER_TYPE,
@@ -47,30 +44,16 @@ let submitNewUser = (n) => {
     if (err) {
       console.error('Insert error:', err);
     } else {
-      console.log('Successful inject:', res);
+      console.info('#' + c, 'Created user', newUser.name, 'born', newUser.dob, '- Users to go:', n - 1);
       if (n > 0) {
-        submitNewUser(n - 1);
+        submitNewUser(n - 1, c + 1);
       }
     }
   });
 };
 
-// faker.locale = 'ru';
-// submitNewUser(1);
-console.dir(generator.constructNewUser());
+// deleteAllUsers();
 
-//body: name, email, gender, location, photoCount, dob, traits
+pingServer();
 
-// client.create({
-//   index: 'index',
-//   type: 'Plastic',
-//   body: {
-//     title: 'Elastic Plastic',
-//     published_at: '2013-01-01',
-//     counter: 1
-//   }
-// }, function (error, response) {
-//   console.log(response);
-//   process.exit();
-//   // ...
-// });
+// console.dir(generator.constructNewUser());

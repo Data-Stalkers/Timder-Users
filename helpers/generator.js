@@ -58,10 +58,12 @@ let getDoB = () => {
 };
 
 let getGender = (input) => {
-  if (input === 0) {
+  if (input === 1) {
+    return 'F';
+  } else if (input === 0) {
     return 'M';
   }
-  return 'F';
+  return 'O';
 }
 
 let constructNewUser = () => {
