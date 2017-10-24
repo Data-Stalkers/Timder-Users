@@ -7,6 +7,7 @@ const client = new elasticsearch.Client({
 
 const INDEX_NAME = 'userslist';
 const USER_TYPE = 'User';
+const QUERY_SIZE = 50;
 
 let appendId = (obj) => {
   let result = obj._source;
@@ -15,13 +16,14 @@ let appendId = (obj) => {
 };
 
 let pingServer = () => {
-  client.ping({}, function (error) {
-    if (error) {
-      console.trace('Elasticsearch cluster is down!');
-    } else {
-      console.log('==== All is well ====');
-      // submitNewUser(1);
-    }
+  return new Promise ((resolve, reject) => {
+    client.ping({}, function (error) {
+      if (error) {
+        console.trace('Elasticsearch cluster is down!');
+      } else {
+        console.log('==== All is well ====');
+      }
+    });
   });
 };
 
@@ -111,7 +113,7 @@ let queryByLocation = (input) => {
   return new Promise((resolve, reject) => {
     client.search({
       index: INDEX_NAME,
-      size: 50,
+      size: QUERY_SIZE,
       body: options
     }, function(err, res) {
       if (err) {
