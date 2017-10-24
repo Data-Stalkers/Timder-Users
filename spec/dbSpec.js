@@ -63,8 +63,8 @@ describe('AWS Elastic Search server', function () {
 });
 
 describe('Query helpers', function() {
+  let user1, user2;
   it ('should be able to retrieve a random user from db', function(done) {
-    let user1, user2;
     dbHelpers.getRandomUser().then((data) => {
       user1 = data;
       return dbHelpers.getRandomUser();
@@ -77,7 +77,35 @@ describe('Query helpers', function() {
     })
   });
 
-  xit ('should be able to search pre-existing user by name', function(done) {
+
+  it ('should be able to search pre-existing user by name', function(done) {
+    dbHelpers.queryByName(user1.name).then((data) => {
+      expect(user1.name).to.equal(data.name);
+      done();
+    });
+  });
+
+  it('should be able to search by ID', function(done) {
+    dbHelpers.queryById(user1.id).then((data) => {
+      expect(data.name).to.equal(user1.name);
+      done();
+    });
+  });
+
+  it('should return an array of users when queried by location', function(done) {
+    dbHelpers.queryByLocation({location: 'A', genderFilter: 'F'}).then((data) => {
+      // console.dir(data);
+      expect(data.length).to.be.above(0);
+      expect(typeof data[0].name).to.equal('string');
+      done();
+    });
+  });
+
+  xit('should not include a gender in location query if it is filtered out', function(done) {
+
+  });
+
+  xit('should not include a user ID in location query if it is filtered out', function(done) {
 
   });
 });

@@ -8,6 +8,12 @@ const client = new elasticsearch.Client({
 const INDEX_NAME = 'userslist';
 const USER_TYPE = 'User';
 
+let appendId = (obj) => {
+  let result = obj._source;
+  result.id = obj._id;
+  return result;
+};
+
 let pingServer = () => {
   client.ping({}, function (error) {
     if (error) {
@@ -25,11 +31,9 @@ let deleteAllUsers = () => {
       index: INDEX_NAME
     }, function (err, res) {
       if (err) {
-        // console.err('Deletion error:', err);
         reject(err);
       } else {
         resolve(res);
-        // console.info('Deletion success', res);
       }
     });
   });
@@ -41,7 +45,7 @@ let getRandomUser = () => {
     client.search({
       index: INDEX_NAME,
       size: 1,
-      body: {query: {
+      body: { query: {
         function_score: {
           random_score: { seed: a }
         }
@@ -50,9 +54,69 @@ let getRandomUser = () => {
       if (err) {
         reject(err);
       } else {
-        resolve(res.hits.hits[0]._source);
+        resolve(appendId(res.hits.hits[0]));
       }
-      // console.log(res.hits.hits[0]._source);
+    });
+  });
+};
+
+let queryByName = (name) => {
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME,
+      q: 'name:' + name
+    }, function(err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(appendId(res.hits.hits[0]));
+      }
+    });
+  });
+};
+
+let queryById = (userId) => {
+  return new Promise((resolve, reject) => {
+    client.get({
+      index: INDEX_NAME,
+      type: USER_TYPE,
+      id: userId
+    }, function (err, res) {
+      if (err) {
+        reject(err);
+      }
+      resolve(appendId(res));
+    });
+  });
+};
+
+//location, genderFilter, userFilter[]
+let queryByLocation = (options) => {
+  let queryString = 'location:' + options.location;
+  if (options.genderFilter) {
+    queryString += ' gender:' + options.genderFilter;
+  }
+  if (options.userFilter) {
+    queryString += ' id:';
+    for (var ele of options.userFilter) {
+      queryString += '-' + ele;
+    }
+  }
+  // console.log('query:', queryString, '\n');
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME,
+      size: 50,
+      q: queryString
+    }, function(err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        let result = res.hits.hits.map((ele) => {
+          return appendId(ele);
+        });
+        resolve(result);
+      }
     });
   });
 };
@@ -60,5 +124,8 @@ let getRandomUser = () => {
 module.exports = {
   pingServer,
   deleteAllUsers,
-  getRandomUser
+  getRandomUser,
+  queryByName,
+  queryById,
+  queryByLocation
 };

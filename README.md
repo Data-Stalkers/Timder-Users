@@ -42,8 +42,8 @@ Query will happen with one of two unique keys
 
 - `type` Can be either __user__ or __stat__. Defaults to __user__.
 - `query` Used with type __user__. User ID num or zone string. Can accept an array
-- `gender` Used with type __user__. _[OPTIONAL]_. The gender of users to retrieve
-- `filter` Used with type __user__. _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
+- `gender` Used with type __user__ when querying by location. _[OPTIONAL]_. The gender of users to retrieve
+- `filter` Used with type __user__ when querying by location. _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
 
 - `startDate` Used with __stat__. Start of period to query for stats. Takes formats supported by PostgreSQL. Defaults at first entry
 - `endDate` Used with __stat__. End of period to query for stats. Takes formats supported by PostgreSQL. Defaults at last entry
@@ -58,13 +58,13 @@ Get full information on user with ID _#7443_
 }
 ```
 
-Get all females from _"Zone A"_ except userIDs _56_ and _69_
+Get all females from _"Zone A"_ except userIDs _AV9LofjhxcHrw1GRCa9Z_ and _AV9LjC3EKmvG0ooIGY4T_
 ```javascript
 {
   type: 'user',
   query: 'A',
   gender: 'F',
-  filter: [65, 69]
+  filter: ['AV9LofjhxcHrw1GRCa9Z', 'AV9LjC3EKmvG0ooIGY4T']
 }
 ```
 
