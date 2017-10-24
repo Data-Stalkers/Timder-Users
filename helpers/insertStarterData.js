@@ -8,7 +8,7 @@ const client = new elasticsearch.Client({
 
 const INDEX_NAME = 'userslist';
 const USER_TYPE = 'User';
-const NUM_TO_INSERT = 1000;
+const NUM_TO_INSERT = 100000;
 
 let pingServer = () => {
   client.ping({}, function (error) {

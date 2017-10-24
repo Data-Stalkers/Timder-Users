@@ -2,6 +2,7 @@ const elasticsearch = require('elasticsearch');
 const configs = require('../config/config.js');
 const expect = require('chai').expect;
 const generator = require('../helpers/generator.js');
+const dbHelpers = require('../database/index.js');
 
 const client = new elasticsearch.Client({
   host: configs.elasticUri
@@ -38,6 +39,17 @@ describe('AWS Elastic Search server', function () {
     });
   });
 
+  it ('should be able to search something inserted before', function(done) {
+    client.get({
+      index: INDEX_NAME,
+      type: USER_TYPE,
+      id: userId
+    }, function (err, res) {
+      expect(res._source.name).to.equal(newUser.name);
+      done();
+    });
+  });
+
   it ('should delete from the database', function(done) {
     client.delete({
       index: INDEX_NAME,
@@ -47,6 +59,26 @@ describe('AWS Elastic Search server', function () {
       expect(res.found).to.equal(true);
       done();
     });
+  });
+});
+
+describe('Query helpers', function() {
+  it ('should be able to retrieve a random user from db', function(done) {
+    let user1, user2;
+    dbHelpers.getRandomUser().then((data) => {
+      user1 = data;
+      return dbHelpers.getRandomUser();
+    }).then((data) => {
+      user2 = data;
+      // console.log('1', user1);
+      // console.log('2', user2);
+      expect(user1.name).to.not.equal(user2.name);
+      done();
+    })
+  });
+
+  xit ('should be able to search pre-existing user by name', function(done) {
+
   });
 });
 

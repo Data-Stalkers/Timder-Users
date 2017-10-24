@@ -1,12 +1,12 @@
 {
   "name": "thesis-users",
   "version": "1.0.0",
-  "description": "User Service component for the Datastalkers Timder App",
+  "description": "User Service component for the Datastalkers TimDer App",
   "main": ".eslintrc.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "injectData": "node helpers/insertStarterData.js",
-    "cleandb": "node helpers/cleanDB.js",
+    "inject-data": "node helpers/insertStarterData.js",
+    "clean-db": "node helpers/cleanDB.js",
     "db-test": "mocha --bail -R nyan spec/dbSpec.js"
   },
   "repository": {
