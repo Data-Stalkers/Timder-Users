@@ -93,7 +93,7 @@ describe('Query helpers', function() {
   });
 
   it('should return an array of users when queried by location', function(done) {
-    dbHelpers.queryByLocation({location: 'A', genderFilter: 'F'}).then((data) => {
+    dbHelpers.queryByLocation({location: 'A'}).then((data) => {
       // console.dir(data);
       expect(data.length).to.be.above(0);
       expect(typeof data[0].name).to.equal('string');
@@ -101,12 +101,31 @@ describe('Query helpers', function() {
     });
   });
 
-  xit('should not include a gender in location query if it is filtered out', function(done) {
-
+  it('should not include a gender in location query if it is filtered out', function(done) {
+    let queryGender = 'F';
+    dbHelpers.queryByLocation({location: 'A', genderFilter: queryGender}).then((data) => {
+      // console.dir(data);
+      for (var ele of data) {
+        expect(ele.gender).to.equal('F');
+      }
+      expect(data.length).to.be.above(0);
+      expect(typeof data[0].name).to.equal('string');
+      done();
+    });
   });
 
-  xit('should not include a user ID in location query if it is filtered out', function(done) {
-
+  it('should not include a user ID in location query if it is filtered out', function(done) {
+    let queryLocation = user1.location;
+    let queryId = user1.id;
+    dbHelpers.queryByLocation({location: queryLocation, userFilter: [queryId]}).then((data) => {
+      // console.dir(data);
+      for (var ele of data) {
+        expect(ele.id).to.not.equal(queryId);
+      }
+      expect(data.length).to.be.above(0);
+      expect(typeof data[0].name).to.equal('string');
+      done();
+    });
   });
 });
 

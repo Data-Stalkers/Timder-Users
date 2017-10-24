@@ -90,24 +90,29 @@ let queryById = (userId) => {
   });
 };
 
-//location, genderFilter, userFilter[]
-let queryByLocation = (options) => {
-  let queryString = 'location:' + options.location;
-  if (options.genderFilter) {
-    queryString += ' gender:' + options.genderFilter;
-  }
-  if (options.userFilter) {
-    queryString += ' id:';
-    for (var ele of options.userFilter) {
-      queryString += '-' + ele;
+let queryByLocation = (input) => {
+  let options = { query: {
+    bool: {
+      must: [
+        { match: { location: input.location } }
+      ]
     }
+  }};
+  if (input.genderFilter) {
+    options.query.bool.must.push({ match: { gender: input.genderFilter } });
   }
-  // console.log('query:', queryString, '\n');
+  if (input.userFilter) {
+    options.query.bool.must_not = [
+      { ids:
+        { values: input.userFilter }
+      }
+    ];
+  }
   return new Promise((resolve, reject) => {
     client.search({
       index: INDEX_NAME,
       size: 50,
-      q: queryString
+      body: options
     }, function(err, res) {
       if (err) {
         reject(err);
