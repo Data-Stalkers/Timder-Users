@@ -12,7 +12,7 @@ client.deleteByQuery({
   index: INDEX_NAME
 }, function (err, res) {
   if (err) {
-    console.err('Deletion error:', err);
+    console.error('Deletion error:', err);
   } else {
     console.info('Deletion success', res);
   }

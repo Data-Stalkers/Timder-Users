@@ -70,7 +70,7 @@ describe('Query helpers', function() {
       return dbHelpers.getRandomUser();
     }).then((data) => {
       user2 = data;
-      // console.log('1', user1);
+      console.log(user1);
       // console.log('2', user2);
       expect(user1.name).to.not.equal(user2.name);
       done();
@@ -94,7 +94,7 @@ describe('Query helpers', function() {
 
   it('should return an array of users when queried by location', function(done) {
     dbHelpers.queryByLocation({location: 'A'}).then((data) => {
-      // console.dir(data);
+      console.dir(data);
       expect(data.length).to.be.above(0);
       expect(typeof data[0].name).to.equal('string');
       done();
@@ -118,7 +118,7 @@ describe('Query helpers', function() {
     let queryLocation = user1.location;
     let queryId = user1.id;
     dbHelpers.queryByLocation({location: queryLocation, userFilter: [queryId]}).then((data) => {
-      // console.dir(data);
+      console.dir(data);
       for (var ele of data) {
         expect(ele.id).to.not.equal(queryId);
       }

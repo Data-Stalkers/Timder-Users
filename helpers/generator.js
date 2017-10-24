@@ -71,7 +71,6 @@ let getGender = (input) => {
   return 'O';
 }
 
-
 /**
  * Assembles a new user object using all the helper methods
  * @exports constructNewUser

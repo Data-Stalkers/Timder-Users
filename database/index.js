@@ -77,6 +77,17 @@ let queryByName = (name) => {
   });
 };
 
+/* Return Example:
+{ name: 'Destiney Pagac',
+    email: 'Destiney.Pagac79@gmail.com',
+    gender: 'F',
+    location: 'E',
+    photoCount: 2,
+    dob: 1994,
+    traits: '["Brown Eyes","Dyed Hair","Edgy"]',
+    id: 'AV9QdtXQnjGSTgtGtCuL' },
+*/
+
 let queryById = (userId) => {
   return new Promise((resolve, reject) => {
     client.get({
@@ -127,6 +138,8 @@ let queryByLocation = (input) => {
     });
   });
 };
+
+//Returns array of user objects
 
 module.exports = {
   pingServer,
