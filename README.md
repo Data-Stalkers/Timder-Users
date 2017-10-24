@@ -156,6 +156,8 @@ Run `npm install`
 
 ## Other Information
 
+Run `npm run document` to generate a JSDoc documentation directory
+
 ### Schema
 
 __Users__

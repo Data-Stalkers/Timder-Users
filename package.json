@@ -8,7 +8,7 @@
     "inject-data": "node helpers/insertStarterData.js",
     "clean-db": "node helpers/cleanDB.js",
     "db-test": "mocha --bail -R nyan spec/dbSpec.js",
-    "document": "jsdoc helpers/generator.js database/index.js"
+    "document": "jsdoc helpers/generator.js database/index.js helpers/insertStarterData.js -R README.md"
   },
   "repository": {
     "type": "git",
