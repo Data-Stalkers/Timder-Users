@@ -81,7 +81,7 @@ let bulkSubmit = (n = NUM_TO_INSERT, c = 0) => {
       }
     };
 
-    if ((i + 1) % 100 === 0) console.log('Created', i, 'of', BULK_AMOUNT, 'in batch');
+    if ((i + 1) % 100 === 0) console.log('Created', i + 1, 'of', BULK_AMOUNT, 'in batch');
 
     submitArray.push(userMethod);
     submitArray.push(newUser);

@@ -1,5 +1,6 @@
 const elasticsearch = require('elasticsearch');
 const configs = require('../config/config.js');
+const logger = require('./queryLogger.js');
 
 const client = new elasticsearch.Client({
   host: configs.elasticUri
@@ -100,6 +101,7 @@ let getRandomUser = () => {
       if (err) {
         reject(err);
       } else {
+        sendLog(res.took, 10000, res.hits.total, res.timed_out);
         resolve(appendId(res.hits.hits[0]));
       }
     });
@@ -122,6 +124,7 @@ let queryByName = (name) => {
       if (err) {
         reject(err);
       } else {
+        sendLog(res.took, 1, res.hits.total, res.timed_out);
         resolve(appendId(res.hits.hits[0]));
       }
     });
@@ -161,6 +164,7 @@ let queryById = (userId) => {
  * @returns {Array} An array of user objects matching the query
  */
 let queryByLocation = (input) => {
+  let queryScore = 1;
   let options = { query: {
     bool: {
       must: [
@@ -170,8 +174,10 @@ let queryByLocation = (input) => {
   }};
   if (input.genderFilter) {
     options.query.bool.must.push({ match: { gender: input.genderFilter } });
+    queryScore++;
   }
   if (input.userFilter) {
+    queryScore += input.userFilter.length;
     options.query.bool.must_not = [
       { ids:
         { values: input.userFilter }
@@ -187,6 +193,7 @@ let queryByLocation = (input) => {
       if (err) {
         reject(err);
       } else {
+        sendLog(res.took, queryScore, res.hits.total, res.timed_out);
         let result = res.hits.hits.map((ele) => {
           return appendId(ele);
         });
@@ -195,6 +202,23 @@ let queryByLocation = (input) => {
     });
   });
 };
+
+/**
+ * Sends a log with query information
+ * @function
+ * @param {number} took Time the DB took to get data, in milliseconds
+ * @param {number} queryScore Number of query conditions in the search
+ * @param {number} hits Number of items returned in query
+ * @param {boolean} timedOut Whether or not the request timed out
+ */
+let sendLog = (took, queryScore, hits, timedOut) => {
+  logger.logQueryTime({
+    took: took,
+    queryScore: queryScore,
+    hits: hits,
+    timedOut: timedOut
+  });
+}
 
 module.exports = {
   pingServer,
