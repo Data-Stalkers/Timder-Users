@@ -1,4 +1,6 @@
 var faker = require('faker');
+var Chance = require('chance');
+var chance = new Chance();
 
 let d = new Date();
 
@@ -102,6 +104,15 @@ let getGender = (input) => {
   return 'O';
 }
 
+let getGenderForChance = (input) => {
+  if (input === 1) {
+    return 'female';
+  } else if (input === 0) {
+    return 'male';
+  }
+  return 'O';
+}
+
 /**
  * Assembles a new user object using all the helper methods
  * @function
@@ -111,7 +122,7 @@ let getGender = (input) => {
 let constructNewUser = () => {
   let gender = Math.floor(Math.random() * 2);
   let newName = {
-    firstName: faker.name.firstName(gender),
+    firstName: chance.first({ gender: getGenderForChance(gender) }),
     lastName: faker.name.lastName()
   };
   let newUser = {
@@ -126,6 +137,8 @@ let constructNewUser = () => {
   // console.dir(newUser);
   return newUser;
 }
+
+// constructNewUser();
 
 module.exports = {
   constructNewUser

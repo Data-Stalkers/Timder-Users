@@ -1,5 +1,5 @@
 const elasticsearch = require('elasticsearch');
-const faker = require('faker');
+// const faker = require('faker');
 const configs = require('../config/config.js');
 const logger = require('../database/queryLogger.js');
 
@@ -37,9 +37,9 @@ const QUERY_SIZE = 50;
  */
 let getRandomUser = () => {
   let a = new Date().getTime().toString();
-  let randomName = faker.name.firstName();
+  // let randomName = faker.name.firstName();
   // let randomName = 'evan';
-  console.log('...searching for random name:', randomName);
+  // console.log('...searching for random name:', );
   return new Promise((resolve, reject) => {
     client.search({
       index: INDEX_NAME,
@@ -57,7 +57,7 @@ let getRandomUser = () => {
       if (err) {
         reject(err);
       } else {
-        sendLog(res.took, -2, res.hits.total, res.timed_out);
+        sendLog(res.took, -3, res.hits.total, res.timed_out);
         console.log(res.hits.hits[0]._source);
         resolve(appendId(res.hits.hits[0]));
       }
@@ -65,6 +65,9 @@ let getRandomUser = () => {
   });
 };
 
+/**
+ * Helper function to send log to ES
+ */
 let sendLog = (took, queryScore, hits, timedOut) => {
   logger.logQueryTime({
     took: took,
@@ -74,6 +77,27 @@ let sendLog = (took, queryScore, hits, timedOut) => {
   });
 }
 
+/**
+ * Helper function to get current count of users
+ */
+let getCount = () => {
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME
+    }, function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(res.hits.total);
+        resolve(res);
+      }
+    });
+  });
+};
+
+/*
+ * Helper function to append ID to user object
+ */
 let appendId = (obj) => {
   let result = obj._source;
   result.id = obj._id;
@@ -81,7 +105,9 @@ let appendId = (obj) => {
 };
 
 
-//test
-for (var i = 0; i < 5; i++) {
-  getRandomUser();
-}
+// //test
+// for (var i = 0; i < 5; i++) {
+//   getRandomUser();
+// }
+
+getCount();

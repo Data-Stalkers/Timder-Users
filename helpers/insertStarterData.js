@@ -6,6 +6,8 @@ const client = new elasticsearch.Client({
   host: configs.elasticUri
 });
 
+let count = 0;
+
 /** @module */
 
 /**
@@ -41,7 +43,10 @@ let pingServer = () => {
     } else {
       console.log('==== All is well ====');
       // submitNewUser(NUM_TO_INSERT);
-      bulkSubmit(NUM_TO_INSERT);
+      getCount().then((data) => {
+        count = data;
+        bulkSubmit(NUM_TO_INSERT);
+      });
     }
   });
 };
@@ -73,16 +78,14 @@ let bulkSubmit = (n = NUM_TO_INSERT, c = 0) => {
   let submitArray = [];
   for (var i = 0; i < BULK_AMOUNT; i++) {
     let newUser = generator.constructNewUser();
-
+    newUser.numericalID = c + i + count;
     let userMethod = {
       'index': {
         _index: INDEX_NAME,
         _type: USER_TYPE
       }
     };
-
     if ((i + 1) % 100 === 0) console.log('Created', i + 1, 'of', BULK_AMOUNT, 'in batch');
-
     submitArray.push(userMethod);
     submitArray.push(newUser);
   }
@@ -109,6 +112,7 @@ let bulkSubmit = (n = NUM_TO_INSERT, c = 0) => {
 let submitNewUser = (n, c = 0) => {
   if (n === 0) return;
   let newUser = generator.constructNewUser();
+  newUser.numericalID = c + count;
   client.index({
     index: INDEX_NAME,
     type: USER_TYPE,
@@ -125,7 +129,20 @@ let submitNewUser = (n, c = 0) => {
   });
 };
 
-// deleteAllUsers();
+let getCount = () => {
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME
+    }, function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(res.hits.total);
+        resolve(res.hits.total);
+      }
+    });
+  });
+};
 
 pingServer();
 
