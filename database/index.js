@@ -101,7 +101,7 @@ let getRandomUser = () => {
       if (err) {
         reject(err);
       } else {
-        sendLog(res.took, 10000, res.hits.total, res.timed_out);
+        sendLog(res.took, -1, res.hits.total, res.timed_out);
         resolve(appendId(res.hits.hits[0]));
       }
     });
