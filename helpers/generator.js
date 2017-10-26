@@ -77,7 +77,7 @@ let getDoB = () => {
   let rng = Math.random() * 100;
   let generation;
   if (rng > 85) {
-    generation = 13;
+    generation = 11;
   } else if (rng > 50) {
     generation = 20;
   } else if (rng > 20) {

@@ -64,7 +64,7 @@ let pingServer = () => {
  * Delete everything from database
  * @function
  * @instance
- * @deprecated Use npm run clean-db to clean database
+ * @deprecated Use `npm run clean-db` to clean database
  */
 let deleteAllUsers = () => {
   return new Promise((resolve, reject) => {
@@ -84,6 +84,7 @@ let deleteAllUsers = () => {
  * Pulls a random user from the database
  * @function
  * @instance
+ * @deprecated `getRandomUserByNumID` is more efficient.
  * @returns {Object} A user object
  */
 let getRandomUser = () => {
@@ -204,6 +205,49 @@ let queryByLocation = (input) => {
 };
 
 /**
+ * Pulls a random user from the database by generating a random ID to look up
+ * @function
+ * @instance
+ * @returns {Object} A user object
+ */
+let getRandomUserByNumID = () => {
+  return new Promise((resolve, reject) => {
+    getCount().then((count) => {
+      let ranNum = Math.floor(Math.random() * count);
+      return queryByNumericalId(ranNum);
+    }).then((data) => {
+      console.dir(data);
+      resolve(data);
+    }).catch((err) => {
+      reject(err);
+    });
+  });
+};
+
+/**
+ * Query DB by generated numerical ID
+ * @function
+ * @param {number} numericalID A generated numerical ID for the user
+ * @returns {Object} A User object
+ */
+let queryByNumericalId = (numericalID) => {
+  console.log('searching numID', numericalID);
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME,
+      q: 'numericalID:' + numericalID
+    }, function(err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        sendLog(res.took, -3, res.hits.total, res.timed_out);
+        resolve(appendId(res.hits.hits[0]));
+      }
+    });
+  });
+};
+
+/**
  * Sends a log with query information
  * @function
  * @param {number} took Time the DB took to get data, in milliseconds
@@ -220,11 +264,30 @@ let sendLog = (took, queryScore, hits, timedOut) => {
   });
 }
 
+/**
+ * Helper function to get current count of users
+ */
+let getCount = () => {
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME
+    }, function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(res.hits.total);
+        resolve(res.hits.total);
+      }
+    });
+  });
+};
+
 module.exports = {
   pingServer,
   deleteAllUsers,
   getRandomUser,
   queryByName,
   queryById,
-  queryByLocation
+  queryByLocation,
+  getRandomUserByNumID
 };

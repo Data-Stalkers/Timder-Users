@@ -9,7 +9,8 @@
     "clean-db": "node helpers/cleanDB.js",
     "db-test": "mocha --bail -R nyan spec/dbSpec.js",
     "server-test": "mocha --bail -R nyan spec/serverSpec.js",
-    "document": "jsdoc -r . -R README.md"
+    "document": "jsdoc -r helpers database -R README.md",
+    "start": "node server/index.js"
   },
   "repository": {
     "type": "git",

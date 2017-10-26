@@ -35,30 +35,37 @@ const QUERY_SIZE = 50;
  * @instance
  * @returns {Object} A user object
  */
-let getRandomUser = () => {
-  let a = new Date().getTime().toString();
-  // let randomName = faker.name.firstName();
-  // let randomName = 'evan';
-  // console.log('...searching for random name:', );
+let getRandomUserByNumID = () => {
+  return new Promise((resolve, reject) => {
+    getCount().then((count) => {
+      let ranNum = Math.floor(Math.random() * count);
+      return queryByNumericalId(ranNum);
+    }).then((data) => {
+      console.dir(data);
+      resolve(data);
+    }).catch((err) => {
+      reject(err);
+    });
+  });
+};
+
+/**
+ * Query DB by generated numerical ID
+ * @function
+ * @param {number} numericalID A generated numerical ID for the user
+ * @returns {Object} A User object
+ */
+let queryByNumericalId = (numericalID) => {
+  console.log('searching numID', numericalID);
   return new Promise((resolve, reject) => {
     client.search({
       index: INDEX_NAME,
-      size: 1,
-      body: { query: {
-        function_score: {
-          functions: [
-            {
-              random_score: { seed: a }
-            }
-          ]
-        }
-      }}
+      q: 'numericalID:' + numericalID
     }, function(err, res) {
       if (err) {
         reject(err);
       } else {
         sendLog(res.took, -3, res.hits.total, res.timed_out);
-        console.log(res.hits.hits[0]._source);
         resolve(appendId(res.hits.hits[0]));
       }
     });
@@ -89,7 +96,7 @@ let getCount = () => {
         reject(err);
       } else {
         console.log(res.hits.total);
-        resolve(res);
+        resolve(res.hits.total);
       }
     });
   });
@@ -105,9 +112,9 @@ let appendId = (obj) => {
 };
 
 
-// //test
-// for (var i = 0; i < 5; i++) {
-//   getRandomUser();
-// }
+//test
+for (var i = 0; i < 5; i++) {
+  getRandomUserByNumID();
+}
 
-getCount();
+// getCount();
