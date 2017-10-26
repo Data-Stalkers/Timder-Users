@@ -1,10 +1,14 @@
 {
   "name": "thesis-users",
   "version": "1.0.0",
-  "description": "User Service component for the Datastalkers Tinder App",
+  "description": "User Service component for the Datastalkers TimDer App",
   "main": ".eslintrc.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "inject-data": "node helpers/insertStarterData.js",
+    "clean-db": "node helpers/cleanDB.js",
+    "db-test": "mocha --bail -R nyan spec/dbSpec.js",
+    "document": "jsdoc helpers/generator.js database/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +22,11 @@
   "homepage": "https://github.com/hackreactor/hrsf81-thesis#readme",
   "devDependencies": {
     "chai": "^4.1.2",
+    "jsdoc": "^3.5.5",
     "mocha": "^4.0.1"
   },
   "dependencies": {
+    "elasticsearch": "^13.3.1",
     "express": "^4.16.2",
     "faker": "^4.1.0",
     "pg": "^7.3.0",
