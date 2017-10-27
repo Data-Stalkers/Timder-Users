@@ -216,7 +216,7 @@ let getRandomUserByNumID = () => {
       let ranNum = Math.floor(Math.random() * count);
       return queryByNumericalId(ranNum);
     }).then((data) => {
-      console.dir(data);
+      // console.dir(data);
       resolve(data);
     }).catch((err) => {
       reject(err);
@@ -231,7 +231,7 @@ let getRandomUserByNumID = () => {
  * @returns {Object} A User object
  */
 let queryByNumericalId = (numericalID) => {
-  console.log('searching numID', numericalID);
+  // console.log('searching numID', numericalID);
   return new Promise((resolve, reject) => {
     client.search({
       index: INDEX_NAME,
@@ -275,7 +275,7 @@ let getCount = () => {
       if (err) {
         reject(err);
       } else {
-        console.log(res.hits.total);
+        // console.log(res.hits.total);
         resolve(res.hits.total);
       }
     });

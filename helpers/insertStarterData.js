@@ -24,7 +24,7 @@ const USER_TYPE = 'User';
  * The number of users to insert into the database
  * @constant
 */
-const NUM_TO_INSERT = 3000000;
+const NUM_TO_INSERT = 5000000;
 /**
  * Amount of users to generate before submitting to the database.
  * Seems to work best under 10,000

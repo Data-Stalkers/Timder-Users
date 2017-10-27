@@ -10,7 +10,8 @@
     "server-dev": "nodemon server/index.js",
     "server-test": "mocha --bail -R nyan spec/serverSpec.js",
     "document": "jsdoc -r helpers database -R README.md",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "sim": "node spec/usageSim.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "mocha": "^4.0.1"
   },
   "dependencies": {
+    "axios": "^0.17.0",
     "body-parser": "^1.18.2",
     "chance": "^1.0.11",
     "elasticsearch": "^13.3.1",

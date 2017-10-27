@@ -21,14 +21,15 @@ app.use((req, res, next) => {
 
 //Request for a particular user
 app.get('/user', (req, res) => {
+  console.log(req.query);
   let query = req.query.query || '';
-  if (typeof req.query.query !== 'object' && req.query.query !== undefined) {
+  if (typeof req.query.query !== 'object' && req.query.query !== undefined && typeof req.query !== 'object') {
     query = JSON.parse(req.query.query);
   }
   if (query.query) {
     if (query.query.length === 1) {
       //lookup by location
-      console.log('Got a location lookup for Zone', query.query);
+      // console.log('Got a location lookup for Zone', query.query);
       db.queryByLocation({
         location: query.query,
         genderFilter: query.gender,
@@ -41,7 +42,7 @@ app.get('/user', (req, res) => {
       });
     } else {
       //lookup by ID
-      console.log('Got an ID lookup or ID', query.query);
+      // console.log('Got an ID lookup or ID', query.query);
       db.queryById(query.query).then((data) => {
         res.contentType('application/json');
         res.status(200).send(data);
@@ -51,7 +52,7 @@ app.get('/user', (req, res) => {
     }
   } else {
     //No query. Look up random
-    console.log('Random lookup requested');
+    // console.log('Random lookup requested');
     db.getRandomUserByNumID().then((data) => {
       res.contentType('application/json');
       res.status(200).send(data);
