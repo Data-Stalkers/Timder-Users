@@ -4,6 +4,7 @@ const db = require('../database/index.js');
 const app = express();
 
 const port = 3000;
+let d;
 
 // ==== MIDDLEWARE ====
 
@@ -13,7 +14,8 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  console.log(req.method, req.url);
+  d = new Date();
+  console.log(d.toISOString(), '--', req.method, 'request being handled');
   next();
 });
 
@@ -21,7 +23,7 @@ app.use((req, res, next) => {
 
 //Request for a particular user
 app.get('/user', (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
   let query = req.query.query || '';
   if (typeof req.query.query !== 'object' && req.query.query !== undefined && typeof req.query !== 'object') {
     query = JSON.parse(req.query.query);
