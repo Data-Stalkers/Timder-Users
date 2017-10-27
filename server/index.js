@@ -40,6 +40,7 @@ app.get('/user', (req, res) => {
         res.contentType('application/json');
         res.status(200).send(data);
       }).catch((err) => {
+        console.error(err);
         res.status(500).send('An error occured', err);
       });
     } else {
@@ -49,6 +50,7 @@ app.get('/user', (req, res) => {
         res.contentType('application/json');
         res.status(200).send(data);
       }).catch((err) => {
+        console.error(err);
         res.status(500).send('An error occured', err);
       });
     }
@@ -59,6 +61,7 @@ app.get('/user', (req, res) => {
       res.contentType('application/json');
       res.status(200).send(data);
     }).catch((err) => {
+      console.error(err);
       res.status(500).send('An error occured', err);
     });
 

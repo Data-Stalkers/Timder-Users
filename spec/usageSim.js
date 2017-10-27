@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const SERVER_URL = require('../config/config.js').serverUri;
 const SESSION_DELAY = 5;
-const SESSION_DELAY_VARIANCE = 1000;
+const SESSION_DELAY_VARIANCE = 800;
 const SESSIONS_TO_SIMULATE = 200;
 
 
@@ -14,7 +14,8 @@ let simState = {
   queuesRequested: 0,
   rageQuits: 0,
   maxUsers: 0,
-  loginFails: 0
+  loginFails: 0,
+  errors: {}
 }
 
 let nextUserTime;
@@ -34,7 +35,8 @@ let endReport = () => {
   console.log('Peak user activity:', simState.maxUsers);
   console.log('Login Fails:', simState.loginFails);
   console.log('Last login user number:', simState.totalSessions);
-  console.log('\x1b[41mFail rate:', Math.floor(simState.rageQuits / simS.totalSessions), '\x1b[0m\n');
+  console.log('\x1b[41mFail rate:', Math.floor((simState.rageQuits / simState.totalSessions) * 100), '%\x1b[0m\n');
+  console.log('Errors tracked:', simState.errors)
   process.exit();
 };
 
@@ -63,10 +65,13 @@ class Session {
       gender: genderFlip(this.user.gender),
       filter: this.swiped
     } }).then((res) => {
+      // console.log(res);
       simState.queuesRequested++;
       this.swipeQueue(res.data);
       console.log('\x1b[2m', this.user.name, 'got a queue and is swiping through it\x1b[0m');
     }).catch((err) => {
+      // console.log(err.response.statusText);
+      simState.errors[err.response.statusText] = true;
       simState.rageQuits++;
       console.error('\x1b[31m', this.user.name, 'failed to get a queue and is now blowing up\x1b[0m');
       this.end();
@@ -75,7 +80,7 @@ class Session {
 
   swipeQueue (fullQueue) {
     //add to swiped list
-    for (var ele of fullQueue) {
+    for (var i = 0; i < fullQueue.length; i++) {
       this.swiped.push(ele.id);
     }
     this.queuesBrowsed++;
@@ -115,6 +120,7 @@ let sessionLoop = () => {
   }).catch((err) => {
     console.log('\x1b[31m=== Error getting a user!! ===\x1b[0m');
     simState.loginFails++;
+    simState.errors[err.response.statusText] = true;
     // console.error(err);
     // process.exit(1);
   });
