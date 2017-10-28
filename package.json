@@ -11,7 +11,7 @@
     "server-test": "mocha --bail -R nyan spec/serverSpec.js",
     "document": "jsdoc -r helpers database -R README.md",
     "start": "node server/index.js",
-    "sim": "node spec/usageSim.js"
+    "sim": "node helpers/usageSim.js"
   },
   "repository": {
     "type": "git",

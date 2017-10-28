@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('../database/index.js');
+const fs = require('fs');
 const app = express();
 
+const ERROR_LOG_PATH = './logs/serverLog.txt';
 const port = 3000;
 let d;
 
@@ -23,11 +25,7 @@ app.use((req, res, next) => {
 
 //Request for a particular user
 app.get('/user', (req, res) => {
-  // console.log(req.query);
-  let query = req.query.query || '';
-  if (typeof req.query.query !== 'object' && req.query.query !== undefined && typeof req.query !== 'object') {
-    query = JSON.parse(req.query.query);
-  }
+  let query = req.query || '';
   if (query.query) {
     if (query.query.length === 1) {
       //lookup by location
@@ -40,7 +38,7 @@ app.get('/user', (req, res) => {
         res.contentType('application/json');
         res.status(200).send(data);
       }).catch((err) => {
-        console.error(err);
+        errorLog(err);
         res.status(500).send('An error occured', err);
       });
     } else {
@@ -50,7 +48,7 @@ app.get('/user', (req, res) => {
         res.contentType('application/json');
         res.status(200).send(data);
       }).catch((err) => {
-        console.error(err);
+        errorLog(err);
         res.status(500).send('An error occured', err);
       });
     }
@@ -61,7 +59,7 @@ app.get('/user', (req, res) => {
       res.contentType('application/json');
       res.status(200).send(data);
     }).catch((err) => {
-      console.error(err);
+      errorLog(err);
       res.status(500).send('An error occured', err);
     });
 
@@ -77,6 +75,14 @@ app.post('/user', (req, res) => {
 app.get('/userlist', (req, res) => {
   res.contentType('application/json');
 });
+
+// ==== HELPER ====
+
+let errorLog = (message) => {
+  d = new Date();
+  fs.appendFile(ERROR_LOG_PATH, `===== ${d.toISOString()}\n` + message + '\n', (err) => {});
+  console.error(message);
+};
 
 // ==== SERVER ====
 app.listen(port, function() {

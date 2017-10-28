@@ -1,12 +1,15 @@
-const axios = require('axios');
+const axiosP = require('axios');
+const fs = require('fs');
 
 const SERVER_URL = require('../config/config.js').serverUri;
-const SESSION_DELAY = 5;
-const SESSION_DELAY_VARIANCE = 800;
-const SESSIONS_TO_SIMULATE = 200;
+const SESSION_DELAY = 100;
+const SESSION_DELAY_VARIANCE = 500;
+const SESSIONS_TO_SIMULATE = 100;
+const ERROR_LOG_PATH = './logs/simLog.txt';
 
 
-// axios.get(SERVER_URL + '/user', { params: { query: 'A', gender: 'F' } }).then((res) => {
+let axios = axiosP.create();
+axios.defaults.timeout = 3000;
 
 let simState = {
   openSessions: [],
@@ -30,12 +33,14 @@ let genderFlip = (gender) => {
 
 let endReport = () => {
   console.log('\x1b[41m==== SIM ENDED ====\x1b[0m\n');
+  console.log('Session delay and variance:', SESSION_DELAY, SESSION_DELAY_VARIANCE);
   console.log('Queues requested:', simState.queuesRequested);
   console.log('Rage Quits:', simState.rageQuits);
   console.log('Peak user activity:', simState.maxUsers);
   console.log('Login Fails:', simState.loginFails);
   console.log('Last login user number:', simState.totalSessions);
-  console.log('\x1b[41mFail rate:', Math.floor((simState.rageQuits / simState.totalSessions) * 100), '%\x1b[0m\n');
+  var failRate = Math.floor(((simState.rageQuits + simState.loginFails) / (simState.totalSessions + simState.queuesRequested)) * 100);
+  console.log('\x1b[41mFail rate:', failRate, '%\x1b[0m\n');
   console.log('Errors tracked:', simState.errors)
   process.exit();
 };
@@ -45,7 +50,7 @@ class Session {
     this.user = user;
     this.swiped = [];
     this.queuesBrowsed = 0;
-    this.queuesToBrowse = Math.floor(Math.random() * 4) + 1;
+    this.queuesToBrowse = Math.floor(Math.random() * 6) + 1;
   }
 
   init () {
@@ -60,18 +65,21 @@ class Session {
       return;
     }
     console.log(this.user.name, 'requested a queue');
+    let myID = simState.queuesRequested;
     axios.get(SERVER_URL + '/user', { params: {
       query: 'A',
       gender: genderFlip(this.user.gender),
-      filter: this.swiped
+      filter: this.swiped,
+      reqID: myID
     } }).then((res) => {
       // console.log(res);
       simState.queuesRequested++;
       this.swipeQueue(res.data);
       console.log('\x1b[2m', this.user.name, 'got a queue and is swiping through it\x1b[0m');
     }).catch((err) => {
-      // console.log(err.response.statusText);
-      simState.errors[err.response.statusText] = true;
+      // console.log(err);
+      errorLog(err, 'Queue retrieve fail for ' + this.user.name + '- Req ID #' + myID);
+      // simState.errors[err.code] = simState.errors[err.code] + 1 || 1;
       simState.rageQuits++;
       console.error('\x1b[31m', this.user.name, 'failed to get a queue and is now blowing up\x1b[0m');
       this.end();
@@ -81,7 +89,7 @@ class Session {
   swipeQueue (fullQueue) {
     //add to swiped list
     for (var i = 0; i < fullQueue.length; i++) {
-      this.swiped.push(ele.id);
+      this.swiped.push(fullQueue[i].id);
     }
     this.queuesBrowsed++;
 
@@ -109,7 +117,6 @@ let sessionLoop = () => {
   if (simState.totalSessions >= SESSIONS_TO_SIMULATE) return;
   //Pull a random user and open a session for them
   axios.get(SERVER_URL + '/user').then((res) => {
-    // console.log(res.data);
     console.log('\x1b[36m+User #' + (simState.totalSessions + 1) + '/' + SESSIONS_TO_SIMULATE, 'is signing on\x1b[0m');
     let newSession = new Session(res.data);
     newSession.init();
@@ -118,11 +125,8 @@ let sessionLoop = () => {
     checkMaxUsers();
 
   }).catch((err) => {
-    console.log('\x1b[31m=== Error getting a user!! ===\x1b[0m');
+    errorLog(err, 'Login fail');
     simState.loginFails++;
-    simState.errors[err.response.statusText] = true;
-    // console.error(err);
-    // process.exit(1);
   });
   //Schedule the next user login
   simState.totalSessions++;
@@ -134,6 +138,13 @@ let checkMaxUsers = () => {
   if (simState.openSessions.length > simState.maxUsers) {
     simState.maxUsers = simState.openSessions.length;
   }
+};
+
+let errorLog = (err, message) => {
+  d = new Date();
+  simState.errors[err.code] = simState.errors[err.code] + 1 || 1;
+  fs.appendFile(ERROR_LOG_PATH, `===== ${d.toISOString()}\n  ` + err.code + '; ' + message + '\n  ' + err + '\n', (err) => {});
+  console.error('\x1b[31m', message, '\x1b[0m');
 };
 
 sessionLoop();
