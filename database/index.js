@@ -177,6 +177,10 @@ let queryByLocation = (input) => {
     options.query.bool.must.push({ match: { gender: input.genderFilter } });
     queryScore++;
   }
+  if (input.photoCount) {
+    options.query.bool.must.push({ match: { photoCount: input.photoCount } });
+    queryScore++;
+  }
   if (input.userFilter) {
     queryScore += input.userFilter.length;
     options.query.bool.must_not = [
@@ -240,7 +244,7 @@ let queryByNumericalId = (numericalID) => {
       if (err) {
         reject(err);
       } else {
-        sendLog(res.took, -3, res.hits.total, res.timed_out);
+        sendLog(res.took, 0, res.hits.total, res.timed_out);
         resolve(appendId(res.hits.hits[0]));
       }
     });

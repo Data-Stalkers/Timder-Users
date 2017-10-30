@@ -33,13 +33,15 @@ Query will happen with one of two unique keys
 {
   query: NUMBER or STRING,
   gender: STRING,
-  filter: ARRAY
+  filter: ARRAY,
+  photoCount: NUMBER
 }
 ```
 
-- `query` Used with type __user__. User ID num or zone string. Returns random user when empty
-- `gender` Used with type __user__ when querying by location. _[OPTIONAL]_. The gender of users to retrieve
-- `filter` Used with type __user__ when querying by location. _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
+- `query` User ID num or zone string. Returns random user when empty
+- `gender` _[OPTIONAL]_. The gender of users to retrieve
+- `filter` _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
+- `photoCount` _[OPTIONAL]_. Filter by user's photo count
 
 ##### Example User Request Parameters
 
@@ -62,6 +64,14 @@ Get all females from _"Zone A"_ except userIDs _AV9LofjhxcHrw1GRCa9Z_ and _AV9Lj
   query: 'A',
   gender: 'F',
   filter: ['AV9LofjhxcHrw1GRCa9Z', 'AV9LjC3EKmvG0ooIGY4T']
+}
+```
+
+Get users from _"Zone D"_ with _4_ photos
+```javascript
+{
+  query: 'D',
+  photoCount: 4
 }
 ```
 

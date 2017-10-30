@@ -4,11 +4,12 @@
   "description": "User Service component for the Datastalkers TimDer App",
   "main": ".eslintrc.js",
   "scripts": {
+    "test": "npm run server-test && npm run db-test",
     "inject-data": "node helpers/insertStarterData.js",
     "clean-db": "node helpers/cleanDB.js",
     "db-test": "mocha --bail -R nyan spec/dbSpec.js",
     "server-dev": "nodemon server/index.js",
-    "server-test": "mocha --bail -R nyan spec/serverSpec.js",
+    "server-test": "mocha --bail -R landing spec/serverSpec.js",
     "document": "jsdoc -r helpers database -R README.md",
     "start": "node server/index.js",
     "sim": "node helpers/usageSim.js"
@@ -26,7 +27,8 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "jsdoc": "^3.5.5",
-    "mocha": "^4.0.1"
+    "mocha": "^4.0.1",
+    "request": "^2.83.0"
   },
   "dependencies": {
     "axios": "^0.17.0",
@@ -35,8 +37,6 @@
     "elasticsearch": "^13.3.1",
     "express": "^4.16.2",
     "faker": "^4.1.0",
-    "pg": "^7.3.0",
-    "pg-hstore": "^2.3.2",
     "sequelize": "^4.15.0"
   }
 }

@@ -33,7 +33,8 @@ app.get('/user', (req, res) => {
       db.queryByLocation({
         location: query.query,
         genderFilter: query.gender,
-        userFilter: query.filter
+        userFilter: query.filter,
+        photoCount: query.photoCount
       }).then((data) => {
         res.contentType('application/json');
         res.status(200).send(data);

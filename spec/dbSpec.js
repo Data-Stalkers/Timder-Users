@@ -71,8 +71,17 @@ describe('Query helpers', function() {
       return dbHelpers.getRandomUser();
     }).then((data) => {
       user2 = data;
-      // console.log(user1);
-      // console.log('2', user2);
+      expect(user1.name).to.not.equal(user2.name);
+      done();
+    })
+  });
+
+  it ('should be able to retrieve a random user from db with numeric ID', function(done) {
+    dbHelpers.getRandomUserByNumID().then((data) => {
+      user1 = data;
+      return dbHelpers.getRandomUserByNumID();
+    }).then((data) => {
+      user2 = data;
       expect(user1.name).to.not.equal(user2.name);
       done();
     })
@@ -124,6 +133,19 @@ describe('Query helpers', function() {
       }
       expect(data.length).to.be.above(0);
       expect(typeof data[0].name).to.equal('string');
+      done();
+    });
+  });
+
+  it ('should query users by photo count', function(done) {
+    let queryPhotoCount = '3';
+    dbHelpers.queryByLocation({location: 'A', photoCount: queryPhotoCount}).then((data) => {
+      // console.dir(data);
+      for (var ele of data) {
+        expect(ele.photoCount).to.equal(3);
+      }
+      expect(data.length).to.be.above(1);
+      // expect(typeof data[0].name).to.equal('string');
       done();
     });
   });
