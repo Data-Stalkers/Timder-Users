@@ -77,6 +77,11 @@ app.get('/userlist', (req, res) => {
   res.contentType('application/json');
 });
 
+//Health check for AWS
+app.get('/ping', (req, res) => {
+  res.status(200).send();
+});
+
 // ==== HELPER ====
 
 let errorLog = (message) => {
