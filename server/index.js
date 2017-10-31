@@ -9,6 +9,8 @@ const app = express();
 // ==== CONFIGS ====
 const ERROR_LOG_PATH = './logs/serverLog.txt';
 const port = 3000;
+const MESSAGE_GET_DELAY = 1000;
+
 let d;
 // AWS.config.update({accessKeyId: 'KEY', secretAccessKey: 'SECRET'});
 AWS.config.update({
@@ -90,8 +92,22 @@ let processMessages = (err, data) => {
   // console.log('Processing queue response', err, data);
   if (data && data.Messages && data.Messages.length > 0) {
     for (var i=0; i < data.Messages.length; i++) {
-      let query = JSON.parse(data.Messages[i].body);
-      console.log(data.Messages[i].body);
+      let query;
+      try {
+        query = JSON.parse(data.Messages[i].body);
+      } catch (e) {
+        console.error('Parsing error:', e);
+        query = { query: undefined };
+      }
+      // console.log(data.Messages[i].body);
+      let success = (data) => {
+        publishMessage(data);
+      };
+      let failure = (err) => {
+        errorLog(err);
+      };
+      findUser(query, success, failure);
+
       var deleteOptions = {
         QueueUrl: configs.queueUri,
         ReceiptHandle: data.Messages[i].ReceiptHandle
@@ -105,7 +121,7 @@ let processMessages = (err, data) => {
     getMessages();
 
   } else {
-    setTimeout(getMessages, 1000);
+    setTimeout(getMessages, MESSAGE_GET_DELAY);
   }
 };
 
