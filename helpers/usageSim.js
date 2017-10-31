@@ -92,7 +92,7 @@ class Session {
         reqNum++;
       }).catch((err) => {
         // console.log(err);
-        errorLog(err, 'Queue retrieve fail for ' + this.user.name + '- Req ID #' + reqNum, JSON.stringify(params, null, 2));
+        errorLog(err, 'Queue retrieve fail for ' + this.user.name + '- Req ID #' + reqNum, JSON.stringify(params.query + params.gender, null, 2));
         // simState.errors[err.code] = simState.errors[err.code] + 1 || 1;
         simState.rageQuits++;
         // console.error('\x1b[31m', this.user.name, 'failed to get a queue and is now blowing up\x1b[0m');

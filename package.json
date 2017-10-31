@@ -4,6 +4,7 @@
   "description": "User Service component for the Datastalkers TimDer App",
   "main": ".eslintrc.js",
   "scripts": {
+    "coverage": "nyc mocha 'spec/*.*'",
     "test": "npm run server-test && npm run db-test",
     "inject-data": "node helpers/insertStarterData.js",
     "clean-db": "node helpers/cleanDB.js",
@@ -28,6 +29,7 @@
     "chai": "^4.1.2",
     "jsdoc": "^3.5.5",
     "mocha": "^4.0.1",
+    "nyc": "^11.2.1",
     "request": "^2.83.0"
   },
   "dependencies": {
