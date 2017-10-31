@@ -1,12 +1,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const AWS = require('aws-sdk');
 const db = require('../database/index.js');
 const fs = require('fs');
+const configs = require('../config/config.js');
 const app = express();
 
+// ==== CONFIGS ====
 const ERROR_LOG_PATH = './logs/serverLog.txt';
 const port = 3000;
 let d;
+// AWS.config.update({accessKeyId: 'KEY', secretAccessKey: 'SECRET'});
+AWS.config.update({
+  region: 'us-west-1',
+  accessKeyId: configs.timderAccess,
+  secretAccessKey: configs.timderSecret
+});
+
+var sqs = new AWS.SQS();
+
+var msgBusParams = {
+  QueueUrl: configs.queueUri,
+  MaxNumberOfMessages: 10
+};
 
 // ==== MIDDLEWARE ====
 
@@ -82,12 +98,44 @@ app.get('/ping', (req, res) => {
   res.status(200).send();
 });
 
+//Listen to message bus
+app.get('/recieve', (req,res) => {
+  getMessages();
+  res.status(200).end('Requested to recieve');
+});
+
 // ==== HELPER ====
 
 let errorLog = (message) => {
   d = new Date();
   fs.appendFile(ERROR_LOG_PATH, `===== ${d.toISOString()}\n` + message + '\n', (err) => {});
   console.error(message);
+};
+
+let getMessages = () => {
+  sqs.receiveMessage(msgBusParams, processMessages);
+};
+
+let processMessages = (err, data) => {
+  // console.log('Processing queue response', err, data);
+  if (data && data.Messages && data.Messages.length > 0) {
+    for (var i=0; i < data.Messages.length; i++) {
+      console.log(data.Messages[i]);
+      var deleteOptions = {
+        QueueUrl: configs.queueUri,
+        ReceiptHandle: data.Messages[i].ReceiptHandle
+      };
+
+      sqs.deleteMessage(deleteOptions, (err, res) => {
+        if (err) console.error(err);
+      });
+    }
+
+    getMessages();
+
+  } else {
+    setTimeout(getMessages, 1000);
+}
 };
 
 // ==== SERVER ====
