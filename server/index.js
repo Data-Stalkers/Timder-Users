@@ -42,45 +42,15 @@ app.use((req, res, next) => {
 //Request for a particular user
 app.get('/user', (req, res) => {
   let query = req.query || '';
-  if (query.query) {
-    if (query.query.length === 1) {
-      //lookup by location
-      // console.log('Got a location lookup for Zone', query.query);
-      db.queryByLocation({
-        location: query.query,
-        genderFilter: query.gender,
-        userFilter: query.filter,
-        photoCount: query.photoCount
-      }).then((data) => {
-        res.contentType('application/json');
-        res.status(200).send(data);
-      }).catch((err) => {
-        errorLog(err);
-        res.status(500).send('An error occured', err);
-      });
-    } else {
-      //lookup by ID
-      // console.log('Got an ID lookup or ID', query.query);
-      db.queryById(query.query).then((data) => {
-        res.contentType('application/json');
-        res.status(200).send(data);
-      }).catch((err) => {
-        errorLog(err);
-        res.status(500).send('An error occured', err);
-      });
-    }
-  } else {
-    //No query. Look up random
-    // console.log('Random lookup requested');
-    db.getRandomUserByNumID().then((data) => {
-      res.contentType('application/json');
-      res.status(200).send(data);
-    }).catch((err) => {
-      errorLog(err);
-      res.status(500).send('An error occured', err);
-    });
-
-  }
+  let success = (data) => {
+    res.contentType('application/json');
+    res.status(200).send(data);
+  };
+  let failure = (err) => {
+    errorLog(err);
+    res.status(500).send('An error occured', err);
+  };
+  findUser(query, success, failure);
 });
 
 //Posting a new user. Not to be implemented for MVP
@@ -120,7 +90,8 @@ let processMessages = (err, data) => {
   // console.log('Processing queue response', err, data);
   if (data && data.Messages && data.Messages.length > 0) {
     for (var i=0; i < data.Messages.length; i++) {
-      console.log(data.Messages[i]);
+      let query = JSON.parse(data.Messages[i].body);
+      console.log(data.Messages[i].body);
       var deleteOptions = {
         QueueUrl: configs.queueUri,
         ReceiptHandle: data.Messages[i].ReceiptHandle
@@ -135,8 +106,58 @@ let processMessages = (err, data) => {
 
   } else {
     setTimeout(getMessages, 1000);
-}
+  }
 };
+
+let publishMessage = (data) => {
+  var publishParams = {
+    MessageBody: JSON.stringify(data),
+    QueueUrl: configs.queueOutUri
+  };
+
+  sqs.sendMessage(publishParams, function(err, data) {
+    if (err) {
+      console.log('Error publishing', err);
+    }
+
+    console.log(data);
+  });
+};
+
+let findUser = (query, success, failure) => {
+  if (query.query) {
+    if (query.query.length === 1) {
+      //lookup by location
+      // console.log('Got a location lookup for Zone', query.query);
+      db.queryByLocation({
+        location: query.query,
+        genderFilter: query.gender,
+        userFilter: query.filter,
+        photoCount: query.photoCount
+      }).then((data) => {
+        success(data);
+      }).catch((err) => {
+        failure(err);
+      });
+    } else {
+      //lookup by ID
+      // console.log('Got an ID lookup or ID', query.query);
+      db.queryById(query.query).then((data) => {
+        success(data);
+      }).catch((err) => {
+        failure(err);
+      });
+    }
+  } else {
+    //No query. Look up random
+    // console.log('Random lookup requested');
+    db.getRandomUserByNumID().then((data) => {
+      success(data);
+    }).catch((err) => {
+      failure(err);
+    });
+  }
+}
 
 // ==== SERVER ====
 app.listen(port, function() {

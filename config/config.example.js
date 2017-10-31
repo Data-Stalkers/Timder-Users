@@ -6,7 +6,8 @@ let configs = {
   lbUri: URL_TO_LOAD_BALANCER,
   timderAccess: ACCESS_KEY_FOR_AWS,
   timderSecret: SECRET_KEY_FOR_AWS,
-  queueUri: URL_TO_MSG_BUS
+  queueUri: URL_TO_MSG_BUS_1,
+  queueOutUri: URL_TO_MSG_BUS_2
 };
 
 module.exports = configs;
