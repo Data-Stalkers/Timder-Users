@@ -78,7 +78,7 @@ Get users from _"Zone D"_ with _4_ photos
 #### Output
 
 ```javascript
-[{
+{
   id: NUMBER,
   name: STRING,
   email: STRING,
@@ -87,7 +87,7 @@ Get users from _"Zone D"_ with _4_ photos
   photoCount: NUMBER,
   dob: NUMBER,
   traits: ARRAY
-}]
+}
 ```
 
 The return object has been built to include information irrelevant to the MVP, for future expansion opportunity
@@ -100,6 +100,11 @@ The return object has been built to include information irrelevant to the MVP, f
 - `photoCount` The number of photos the user has uploaded
 - `dob` Represents year the user was born
 - `traits` An array of objective terms that can be used to describe the user's physical appearance. Represents a photo of user.
+
+#### NOTES:
+- If querying for a single user object, a single user object is returned
+- If querying for a list through REST, an array of user objects is returned.
+- If querying for a list through SQS, the array will be wrapped in an object which also has a query key containing the original query
 
 ## Requirements
 

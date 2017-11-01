@@ -12,16 +12,14 @@ const port = 3000;
 const MESSAGE_GET_DELAY = 1000;
 
 let d;
-// AWS.config.update({accessKeyId: 'KEY', secretAccessKey: 'SECRET'});
+
 AWS.config.update({
   region: 'us-west-1',
   accessKeyId: configs.timderAccess,
   secretAccessKey: configs.timderSecret
 });
-
-var sqs = new AWS.SQS();
-
-var msgBusParams = {
+const sqs = new AWS.SQS();
+const msgBusParams = {
   QueueUrl: configs.queueUri,
   MaxNumberOfMessages: 10
 };
@@ -93,15 +91,16 @@ let processMessages = (err, data) => {
   if (data && data.Messages && data.Messages.length > 0) {
     for (var i=0; i < data.Messages.length; i++) {
       let query;
+      console.log('Parsing:', data.Messages[i].Body);
       try {
-        query = JSON.parse(data.Messages[i].body);
+        query = JSON.parse(data.Messages[i].Body);
       } catch (e) {
         console.error('Parsing error:', e);
         query = { query: undefined };
       }
-      // console.log(data.Messages[i].body);
+
       let success = (data) => {
-        publishMessage(data);
+        publishMessage(data, query);
       };
       let failure = (err) => {
         errorLog(err);
@@ -117,15 +116,20 @@ let processMessages = (err, data) => {
         if (err) console.error(err);
       });
     }
-
     getMessages();
-
   } else {
     setTimeout(getMessages, MESSAGE_GET_DELAY);
   }
 };
 
-let publishMessage = (data) => {
+let publishMessage = (data, query) => {
+  if (Array.isArray(data)) {
+    data = {
+      query: query,
+      data: data
+    };
+  }
+
   var publishParams = {
     MessageBody: JSON.stringify(data),
     QueueUrl: configs.queueOutUri
@@ -135,7 +139,6 @@ let publishMessage = (data) => {
     if (err) {
       console.log('Error publishing', err);
     }
-
     console.log(data);
   });
 };
@@ -143,7 +146,6 @@ let publishMessage = (data) => {
 let findUser = (query, success, failure) => {
   if (query.query) {
     if (query.query.length === 1) {
-      //lookup by location
       // console.log('Got a location lookup for Zone', query.query);
       db.queryByLocation({
         location: query.query,
@@ -156,7 +158,6 @@ let findUser = (query, success, failure) => {
         failure(err);
       });
     } else {
-      //lookup by ID
       // console.log('Got an ID lookup or ID', query.query);
       db.queryById(query.query).then((data) => {
         success(data);
@@ -165,7 +166,6 @@ let findUser = (query, success, failure) => {
       });
     }
   } else {
-    //No query. Look up random
     // console.log('Random lookup requested');
     db.getRandomUserByNumID().then((data) => {
       success(data);
