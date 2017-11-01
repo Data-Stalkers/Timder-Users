@@ -6,11 +6,36 @@ const client = new elasticsearch.Client({
   host: configs.elasticUri
 });
 
+let count = 0;
+
+/** @module */
+
+/**
+ * To be used with the assembling the query
+ * @constant
+*/
 const INDEX_NAME = 'userslist';
+/**
+ * To be used with the assembling the query
+ * @constant
+*/
 const USER_TYPE = 'User';
-const NUM_TO_INSERT = 500000;
+/**
+ * The number of users to insert into the database
+ * @constant
+*/
+const NUM_TO_INSERT = 3000000;
+/**
+ * Amount of users to generate before submitting to the database.
+ * Seems to work best under 10,000
+ * @constant
+*/
 const BULK_AMOUNT = 10000;
 
+/**
+ * Pings the server and if there's no error, begins insertion
+ * @function
+ */
 let pingServer = () => {
   client.ping({}, function (error) {
     if (error) {
@@ -18,11 +43,18 @@ let pingServer = () => {
     } else {
       console.log('==== All is well ====');
       // submitNewUser(NUM_TO_INSERT);
-      bulkSubmit(NUM_TO_INSERT);
+      getCount().then((data) => {
+        count = data;
+        bulkSubmit(NUM_TO_INSERT);
+      });
     }
   });
 };
 
+/**
+ * Deletes all the users in the database
+ * @function
+ */
 let deleteAllUsers = () => {
   client.deleteByQuery({
     index: INDEX_NAME
@@ -35,20 +67,25 @@ let deleteAllUsers = () => {
   });
 };
 
+/**
+ * Submits in bulk, BULK_AMOUNT number of users until NUM_TO_INSERT is reached.
+ * @function
+ * @param {number} n The number of users to insert. Should be more than BULK_AMOUNT
+ */
 let bulkSubmit = (n = NUM_TO_INSERT, c = 0) => {
+  if (n < BULK_AMOUNT) console.error('Why even use the bulk submitter');
+
   let submitArray = [];
   for (var i = 0; i < BULK_AMOUNT; i++) {
     let newUser = generator.constructNewUser();
-
+    newUser.numericalID = c + i + count;
     let userMethod = {
       'index': {
         _index: INDEX_NAME,
         _type: USER_TYPE
       }
     };
-
-    if ((i + 1) % 100 === 0) console.log('Created', i, 'of', BULK_AMOUNT, 'in batch');
-
+    if ((i + 1) % 100 === 0) console.log('Created', i + 1, 'of', BULK_AMOUNT, 'in batch');
     submitArray.push(userMethod);
     submitArray.push(newUser);
   }
@@ -67,9 +104,15 @@ let bulkSubmit = (n = NUM_TO_INSERT, c = 0) => {
   });
 }
 
+/**
+ * Submits one by one until NUM_TO_INSERT is reached.
+ * @function
+ * @param {number} n The number of users to submit
+ */
 let submitNewUser = (n, c = 0) => {
   if (n === 0) return;
   let newUser = generator.constructNewUser();
+  newUser.numericalID = c + count;
   client.index({
     index: INDEX_NAME,
     type: USER_TYPE,
@@ -86,7 +129,20 @@ let submitNewUser = (n, c = 0) => {
   });
 };
 
-// deleteAllUsers();
+let getCount = () => {
+  return new Promise((resolve, reject) => {
+    client.search({
+      index: INDEX_NAME
+    }, function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(res.hits.total);
+        resolve(res.hits.total);
+      }
+    });
+  });
+};
 
 pingServer();
 

@@ -31,57 +31,42 @@ Query will happen with one of two unique keys
 
 ```javascript
 {
-  type: STRING,
   query: NUMBER or STRING,
   gender: STRING,
-  filter: ARRAY,
-  startDate: STRING,
-  endDate: STRING
+  filter: ARRAY
 }
 ```
 
-- `type` Can be either __user__ or __stat__. Defaults to __user__.
-- `query` Used with type __user__. User ID num or zone string. Can accept an array
+- `query` Used with type __user__. User ID num or zone string. Returns random user when empty
 - `gender` Used with type __user__ when querying by location. _[OPTIONAL]_. The gender of users to retrieve
 - `filter` Used with type __user__ when querying by location. _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
-
-- `startDate` Used with __stat__. Start of period to query for stats. Takes formats supported by PostgreSQL. Defaults at first entry
-- `endDate` Used with __stat__. End of period to query for stats. Takes formats supported by PostgreSQL. Defaults at last entry
 
 ##### Example User Request Parameters
 
 Get full information on user with ID _#7443_
 ```javascript
 {
-  type: 'user',
   query: 7443
+}
+```
+
+Get a random user
+```javascript
+{
 }
 ```
 
 Get all females from _"Zone A"_ except userIDs _AV9LofjhxcHrw1GRCa9Z_ and _AV9LjC3EKmvG0ooIGY4T_
 ```javascript
 {
-  type: 'user',
   query: 'A',
   gender: 'F',
   filter: ['AV9LofjhxcHrw1GRCa9Z', 'AV9LjC3EKmvG0ooIGY4T']
 }
 ```
 
-##### Example Stat Request Parameters
-
-Get stats from _Oct 31 1984_ to _Dec 25 1984_
-```javascript
-{
-  type: 'stat',
-  startDate: '1984-10-31'
-  endDate: '1984-12-25'
-}
-```
-
 #### Output
 
-##### Type 'user'
 ```javascript
 [{
   id: NUMBER,
@@ -105,22 +90,6 @@ The return object has been built to include information irrelevant to the MVP, f
 - `photoCount` The number of photos the user has uploaded
 - `dob` Represents year the user was born
 - `traits` An array of objective terms that can be used to describe the user's physical appearance. Represents a photo of user.
-
-##### Type 'stat'
-
-```javascript
-{
-  errorsCounted: NUMBER,
-  entries: NUMBER,
-  averageEntryTime: NUMBER,
-  averageRetrieveTime: NUMBER
-}
-```
-
-- `errorsCounted` The number of insertion/read errors generated in the database
-- `entries` Number of entries in the database
-- `averageEntryTime` Average time it takes to insert in milliseconds
-- `averageRetrieveTime` Average time it takes to retrieve in milliseconds
 
 ## Requirements
 
@@ -155,6 +124,8 @@ Run `npm install`
 
 
 ## Other Information
+
+Run `npm run document` to generate a JSDoc documentation directory
 
 ### Schema
 

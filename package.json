@@ -4,11 +4,13 @@
   "description": "User Service component for the Datastalkers TimDer App",
   "main": ".eslintrc.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "inject-data": "node helpers/insertStarterData.js",
     "clean-db": "node helpers/cleanDB.js",
     "db-test": "mocha --bail -R nyan spec/dbSpec.js",
-    "document": "jsdoc helpers/generator.js database/index.js"
+    "server-dev": "nodemon server/index.js",
+    "server-test": "mocha --bail -R nyan spec/serverSpec.js",
+    "document": "jsdoc -r helpers database -R README.md",
+    "start": "node server/index.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,8 @@
     "mocha": "^4.0.1"
   },
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "chance": "^1.0.11",
     "elasticsearch": "^13.3.1",
     "express": "^4.16.2",
     "faker": "^4.1.0",

@@ -45,6 +45,7 @@ describe('AWS Elastic Search server', function () {
       type: USER_TYPE,
       id: userId
     }, function (err, res) {
+      // console.log(res);
       expect(res._source.name).to.equal(newUser.name);
       done();
     });
@@ -70,13 +71,12 @@ describe('Query helpers', function() {
       return dbHelpers.getRandomUser();
     }).then((data) => {
       user2 = data;
-      console.log(user1);
+      // console.log(user1);
       // console.log('2', user2);
       expect(user1.name).to.not.equal(user2.name);
       done();
     })
   });
-
 
   it ('should be able to search pre-existing user by name', function(done) {
     dbHelpers.queryByName(user1.name).then((data) => {
@@ -94,8 +94,8 @@ describe('Query helpers', function() {
 
   it('should return an array of users when queried by location', function(done) {
     dbHelpers.queryByLocation({location: 'A'}).then((data) => {
-      console.dir(data);
-      expect(data.length).to.be.above(0);
+      // console.dir(data);
+      expect(data.length).to.be.above(1);
       expect(typeof data[0].name).to.equal('string');
       done();
     });
@@ -108,7 +108,7 @@ describe('Query helpers', function() {
       for (var ele of data) {
         expect(ele.gender).to.equal('F');
       }
-      expect(data.length).to.be.above(0);
+      expect(data.length).to.be.above(1);
       expect(typeof data[0].name).to.equal('string');
       done();
     });
@@ -117,8 +117,8 @@ describe('Query helpers', function() {
   it('should not include a user ID in location query if it is filtered out', function(done) {
     let queryLocation = user1.location;
     let queryId = user1.id;
-    dbHelpers.queryByLocation({location: queryLocation, userFilter: [queryId]}).then((data) => {
-      console.dir(data);
+    dbHelpers.queryByLocation({location: queryLocation, userFilter: [queryId, user2.id]}).then((data) => {
+      // console.dir(data);
       for (var ele of data) {
         expect(ele.id).to.not.equal(queryId);
       }
