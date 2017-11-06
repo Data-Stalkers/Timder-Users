@@ -45,10 +45,10 @@ Query will happen with one of two unique keys
 
 ##### Example User Request Parameters
 
-Get full information on user with ID _#7443_
+Get full information on user with ID _AV9a5NTbsbucDCy2HeIK_
 ```javascript
 {
-  query: 7443
+  query: AV9a5NTbsbucDCy2HeIK
 }
 ```
 
@@ -104,7 +104,8 @@ The return object has been built to include information irrelevant to the MVP, f
 #### NOTES:
 - If querying for a single user object, a single user object is returned
 - If querying for a list through REST, an array of user objects is returned.
-- If querying for a list through SQS, the array will be wrapped in an object which also has a query key containing the original query
+- If querying for a list through SQS, the array will be wrapped in an object which also has a query key containing the original query.
+- The query object from SQS response can be used as a request ID when attempting to match user queue results.
 
 ## Requirements
 

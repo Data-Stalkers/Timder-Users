@@ -69,7 +69,7 @@ app.get('/ping', (req, res) => {
 });
 
 //Listen to message bus
-app.get('/recieve', (req,res) => {
+app.get('/receive', (req,res) => {
   getMessages();
   res.status(200).end('Requested to recieve');
 });
@@ -91,11 +91,11 @@ let processMessages = (err, data) => {
   if (data && data.Messages && data.Messages.length > 0) {
     for (var i=0; i < data.Messages.length; i++) {
       let query;
-      console.log('Parsing:', data.Messages[i].Body);
+      // console.log('Parsing:', data.Messages[i].Body);
       try {
         query = JSON.parse(data.Messages[i].Body);
       } catch (e) {
-        console.error('Parsing error:', e);
+        // console.error('Parsing error:', e);
         query = { query: undefined };
       }
 
@@ -139,7 +139,7 @@ let publishMessage = (data, query) => {
     if (err) {
       console.log('Error publishing', err);
     }
-    console.log(data);
+    // console.log(data);
   });
 };
 
@@ -175,7 +175,10 @@ let findUser = (query, success, failure) => {
   }
 }
 
-// ==== SERVER ====
+// ==== SERVER START ====
 app.listen(port, function() {
   console.log(`listening on port ${port}`);
 });
+
+//Start polling for messages
+// getMessages();

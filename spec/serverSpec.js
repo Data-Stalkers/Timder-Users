@@ -31,4 +31,10 @@ describe('server', function() {
       done();
     });
   });
+
+  xit('should pull down messages from the SQS services', function(done) {
+    request(URL + '/receive', function(err, res, body) {
+      
+    });
+  });
 });

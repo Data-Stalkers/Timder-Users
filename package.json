@@ -13,7 +13,8 @@
     "server-test": "mocha --bail -R landing spec/serverSpec.js",
     "document": "jsdoc -r helpers database -R README.md",
     "start": "node server/index.js",
-    "sim": "node helpers/usageSim.js"
+    "sim": "node helpers/usageSim.js",
+    "msg-sim": "node helpers/chatSim/msgTester.js"
   },
   "repository": {
     "type": "git",
