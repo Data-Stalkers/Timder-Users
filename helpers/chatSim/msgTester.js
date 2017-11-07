@@ -5,7 +5,7 @@ const chance = new Chance();
 
 const maxSessions = 300;
 const loveBar = 80;
-const ACTION_DELAY = 50;
+const ACTION_DELAY = 100;
 
 let numSessions = 0;
 let messagesSent = 0;

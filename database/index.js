@@ -37,6 +37,7 @@ const QUERY_SIZE = 50;
  * @returns {Object} A user object without nested user info and irrelevant data
  */
 let appendId = (obj) => {
+  if (!obj._source) return;
   let result = obj._source;
   result.id = obj._id;
   return result;
@@ -293,5 +294,6 @@ module.exports = {
   queryByName,
   queryById,
   queryByLocation,
-  getRandomUserByNumID
+  getRandomUserByNumID,
+  queryByNumericalId
 };

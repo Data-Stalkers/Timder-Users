@@ -158,8 +158,16 @@ let findUser = (query, success, failure) => {
         failure(err);
       });
     } else {
+      let modifiedQuery = query.query;
+      if (typeof query.query === 'string') {
+        try {
+          modifiedQuery = Number(query.query);
+        } catch (e) {
+          console.error('Failed parsing', query.query);
+        }
+      }
       // console.log('Got an ID lookup or ID', query.query);
-      db.queryById(query.query).then((data) => {
+      db.queryByNumericalId(modifiedQuery).then((data) => {
         success(data);
       }).catch((err) => {
         failure(err);
