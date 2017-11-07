@@ -32,9 +32,37 @@ describe('server', function() {
     });
   });
 
+  it('Should return a user object when sending GET to /user', function(done) {
+    request(URL, function(error, response, body) {
+      // console.log(body);
+      expect(typeof JSON.parse(body).name).to.equal('string');
+      done();
+    });
+  });
+
+  it('Should return a user object when sending GET to /user with numeric ID query', function(done) {
+    let numIDToTest = 666;
+    request.get({ url: URL, qs: { query: numIDToTest }}, function(error, response, body) {
+      // console.log(body);
+      expect(typeof JSON.parse(body).name).to.equal('string');
+      expect(JSON.parse(body).numericalID).to.equal(numIDToTest);
+      done();
+    });
+  });
+
+  it('Should return a user object when sending GET to /user with stringified numeric ID query', function(done) {
+    let numIDToTest = '666';
+    request.get({ url: URL, qs: { query: numIDToTest }}, function(error, response, body) {
+      // console.log(body);
+      expect(typeof JSON.parse(body).name).to.equal('string');
+      expect(JSON.parse(body).numericalID).to.equal(Number(numIDToTest));
+      done();
+    });
+  });
+
   xit('should pull down messages from the SQS services', function(done) {
     request(URL + '/receive', function(err, res, body) {
-      
+
     });
   });
 });

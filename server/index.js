@@ -33,7 +33,11 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
   d = new Date();
-  console.log(d.toISOString(), '--', req.method, 'request being handled');
+  var ip = (req.headers['x-forwarded-for'] ||
+     req.connection.remoteAddress ||
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress).split(",")[0];
+  console.log(d.toISOString(), '--', req.method, 'request being handled for', ip);
   next();
 });
 
