@@ -33,20 +33,22 @@ Query will happen with one of two unique keys
 {
   query: NUMBER or STRING,
   gender: STRING,
-  filter: ARRAY
+  filter: ARRAY,
+  photoCount: NUMBER
 }
 ```
 
-- `query` Used with type __user__. User ID num or zone string. Returns random user when empty
-- `gender` Used with type __user__ when querying by location. _[OPTIONAL]_. The gender of users to retrieve
-- `filter` Used with type __user__ when querying by location. _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
+- `query` User ID num or zone string. Returns random user when empty
+- `gender` _[OPTIONAL]_. The gender of users to retrieve
+- `filter` _[OPTIONAL]_. An array of user IDs to omit from results, e.g. swiped users
+- `photoCount` _[OPTIONAL]_. Filter by user's photo count
 
 ##### Example User Request Parameters
 
-Get full information on user with ID _#7443_
+Get full information on user with ID _AV9a5NTbsbucDCy2HeIK_
 ```javascript
 {
-  query: 7443
+  query: AV9a5NTbsbucDCy2HeIK
 }
 ```
 
@@ -65,10 +67,18 @@ Get all females from _"Zone A"_ except userIDs _AV9LofjhxcHrw1GRCa9Z_ and _AV9Lj
 }
 ```
 
+Get users from _"Zone D"_ with _4_ photos
+```javascript
+{
+  query: 'D',
+  photoCount: 4
+}
+```
+
 #### Output
 
 ```javascript
-[{
+{
   id: NUMBER,
   name: STRING,
   email: STRING,
@@ -77,7 +87,7 @@ Get all females from _"Zone A"_ except userIDs _AV9LofjhxcHrw1GRCa9Z_ and _AV9Lj
   photoCount: NUMBER,
   dob: NUMBER,
   traits: ARRAY
-}]
+}
 ```
 
 The return object has been built to include information irrelevant to the MVP, for future expansion opportunity
@@ -90,6 +100,12 @@ The return object has been built to include information irrelevant to the MVP, f
 - `photoCount` The number of photos the user has uploaded
 - `dob` Represents year the user was born
 - `traits` An array of objective terms that can be used to describe the user's physical appearance. Represents a photo of user.
+
+#### NOTES:
+- If querying for a single user object, a single user object is returned
+- If querying for a list through REST, an array of user objects is returned.
+- If querying for a list through SQS, the array will be wrapped in an object which also has a query key containing the original query.
+- The query object from SQS response can be used as a request ID when attempting to match user queue results.
 
 ## Requirements
 

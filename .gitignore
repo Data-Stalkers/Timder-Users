@@ -38,3 +38,5 @@ bower_components/
 
 config/config.js
 out/
+.nyc_output
+tinderusers.pem

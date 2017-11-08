@@ -37,6 +37,7 @@ const QUERY_SIZE = 50;
  * @returns {Object} A user object without nested user info and irrelevant data
  */
 let appendId = (obj) => {
+  if (!obj._source) return;
   let result = obj._source;
   result.id = obj._id;
   return result;
@@ -177,6 +178,10 @@ let queryByLocation = (input) => {
     options.query.bool.must.push({ match: { gender: input.genderFilter } });
     queryScore++;
   }
+  if (input.photoCount) {
+    options.query.bool.must.push({ match: { photoCount: input.photoCount } });
+    queryScore++;
+  }
   if (input.userFilter) {
     queryScore += input.userFilter.length;
     options.query.bool.must_not = [
@@ -216,7 +221,7 @@ let getRandomUserByNumID = () => {
       let ranNum = Math.floor(Math.random() * count);
       return queryByNumericalId(ranNum);
     }).then((data) => {
-      console.dir(data);
+      // console.dir(data);
       resolve(data);
     }).catch((err) => {
       reject(err);
@@ -231,7 +236,7 @@ let getRandomUserByNumID = () => {
  * @returns {Object} A User object
  */
 let queryByNumericalId = (numericalID) => {
-  console.log('searching numID', numericalID);
+  // console.log('searching numID', numericalID);
   return new Promise((resolve, reject) => {
     client.search({
       index: INDEX_NAME,
@@ -240,7 +245,7 @@ let queryByNumericalId = (numericalID) => {
       if (err) {
         reject(err);
       } else {
-        sendLog(res.took, -3, res.hits.total, res.timed_out);
+        sendLog(res.took, 0, res.hits.total, res.timed_out);
         resolve(appendId(res.hits.hits[0]));
       }
     });
@@ -275,7 +280,7 @@ let getCount = () => {
       if (err) {
         reject(err);
       } else {
-        console.log(res.hits.total);
+        // console.log(res.hits.total);
         resolve(res.hits.total);
       }
     });
@@ -289,5 +294,6 @@ module.exports = {
   queryByName,
   queryById,
   queryByLocation,
-  getRandomUserByNumID
+  getRandomUserByNumID,
+  queryByNumericalId
 };
